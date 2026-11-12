@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>수원도시공사 PDCA 경영평가 Coach</title>
+  <meta name="description" content="2026년 지방공기업 경영평가 편람 관점을 반영한 PDCA 문서 작성 보조 정적 웹 프로토타입" />
+  <style>
+    :root{
+      --brand:#0799d2;
+      --brand-2:#22b7d6;
+      --brand-3:#6ec9cf;
+      --navy:#153a5b;
+      --text:#1d2939;
+      --muted:#667085;
+      --line:#dbe3ea;
+      --soft:#f4f8fb;
+      --soft-blue:#eef8fc;
+      --warn:#b54708;
+      --warn-bg:#fff7ed;
+      --danger:#b42318;
+      --danger-bg:#fff1f0;
+      --ok:#067647;
+      --ok-bg:#ecfdf3;
+      --white:#fff;
+      --shadow:0 12px 32px rgba(22,58,90,.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--text);
+      background:#f6f8fa;
+      font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",Arial,sans-serif;
+      line-height:1.6;
+      word-break:keep-all;
+    }
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer}
+    a{color:inherit}
+    .shell{max-width:1220px;margin:0 auto;padding:0 24px 80px}
+    .topbar{
+      position:sticky;top:0;z-index:50;
+      background:rgba(255,255,255,.96);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid rgba(219,227,234,.9);
+    }
+    .topbar-inner{max-width:1220px;margin:0 auto;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand{display:flex;align-items:center;gap:14px;min-width:0}
+    .brand img{width:184px;height:52px;object-fit:contain;object-position:left center;background:white}
+    .brand-fallback{display:none;align-items:center;gap:10px;font-weight:800;color:#138ec4;white-space:nowrap}
+    .brand-fallback .mark{position:relative;width:42px;height:42px;border-radius:50%;border:7px solid #0799d2;border-right-color:transparent;transform:rotate(-20deg)}
+    .brand-fallback .mark:after{content:"";position:absolute;inset:5px;border-radius:50%;border:5px solid #63c6d1;border-right-color:transparent}
+    .product-name{padding-left:14px;border-left:1px solid var(--line);font-size:15px;color:var(--navy);font-weight:800;white-space:nowrap}
+    .year-badge{display:flex;align-items:center;gap:8px;background:#eff8ff;color:#175cd3;border:1px solid #b2ddff;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:800;white-space:nowrap}
+    .hero{padding:48px 0 28px}
+    .hero-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:28px;align-items:stretch}
+    .hero-main,.handbook-card{background:white;border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+    .hero-main{padding:34px 36px;position:relative;overflow:hidden}
+    .hero-main:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;right:-100px;top:-110px;background:linear-gradient(135deg,rgba(7,153,210,.14),rgba(110,201,207,.04));}
+    .eyebrow{font-size:13px;color:#0876a7;font-weight:900;letter-spacing:.03em;margin-bottom:10px}
+    h1{font-size:34px;line-height:1.25;margin:0 0 14px;color:#123a59;letter-spacing:-.04em}
+    .lead{font-size:17px;color:#475467;margin:0;max-width:780px}
+    .hero-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+    .hero-tag{background:#f2f4f7;border:1px solid #e4e7ec;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:800;color:#344054}
+    .handbook-card{padding:28px}
+    .handbook-title{display:flex;align-items:center;gap:10px;margin-bottom:16px;color:var(--navy);font-weight:900}
+    .doc-icon{width:34px;height:34px;border-radius:10px;background:#e8f6fb;color:#0876a7;display:grid;place-items:center;font-weight:900}
+    .handbook-card ul{margin:0;padding-left:20px;color:#475467;font-size:14px}
+    .handbook-card li+li{margin-top:7px}
+    .source-link{display:inline-flex;margin-top:17px;color:#0876a7;font-size:12px;font-weight:800;text-decoration:none}
+
+    .stepper-wrap{margin:14px 0 28px;background:white;border:1px solid var(--line);border-radius:16px;padding:14px 18px;box-shadow:0 6px 18px rgba(22,58,90,.04)}
+    .stepper{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+    .step{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;color:#667085;font-size:13px;font-weight:800;transition:.2s}
+    .step .num{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#eef2f6;color:#667085;font-size:12px}
+    .step.active{background:#eef9fd;color:#0876a7}
+    .step.active .num{background:var(--brand);color:white}
+    .step.done{color:#067647}
+    .step.done .num{background:#d1fadf;color:#067647}
+
+    .panel{display:none}
+    .panel.active{display:block;animation:fade .24s ease}
+    @keyframes fade{from{opacity:.3;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .card{background:white;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .card-head{padding:24px 26px 18px;border-bottom:1px solid #edf1f4;display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+    .card-head h2{font-size:22px;margin:0;color:#173b59;letter-spacing:-.03em}
+    .card-head p{margin:5px 0 0;color:var(--muted);font-size:13px}
+    .card-body{padding:26px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+    label.field{display:block}
+    .field span{display:block;font-size:12px;color:#475467;font-weight:800;margin-bottom:7px}
+    .field input,.field select,.field textarea{width:100%;border:1px solid #cfd8e3;border-radius:10px;padding:12px 13px;background:white;color:#1d2939;outline:none;transition:.2s}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:#57b8dd;box-shadow:0 0 0 3px rgba(7,153,210,.10)}
+    .field textarea{min-height:230px;resize:vertical;line-height:1.65}
+    .upload-zone{border:1.5px dashed #9bcfe2;background:#f5fbfd;border-radius:16px;padding:26px;text-align:center;transition:.2s}
+    .upload-zone.drag{border-color:#0876a7;background:#ecf9fd}
+    .upload-zone strong{color:#174c6a}
+    .upload-zone p{font-size:12px;color:#667085;margin:6px 0 13px}
+    .file-name{font-size:12px;color:#0876a7;font-weight:800;margin-top:10px;min-height:18px}
+    .privacy-note{display:flex;gap:10px;align-items:flex-start;background:#f8fafc;border:1px solid #e8edf2;border-radius:12px;padding:12px 14px;font-size:12px;color:#667085;margin-top:14px}
+    .actions{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:22px;flex-wrap:wrap}
+    .btn{border:0;border-radius:10px;padding:11px 16px;font-weight:900;font-size:13px;transition:.18s}
+    .btn.primary{background:#087eb3;color:white;box-shadow:0 5px 12px rgba(8,126,179,.18)}
+    .btn.primary:hover{background:#076c9a}
+    .btn.secondary{background:#eef6fa;color:#116589;border:1px solid #cbe7f2}
+    .btn.ghost{background:white;color:#475467;border:1px solid #d0d5dd}
+    .btn.warn{background:#fff7ed;color:#b54708;border:1px solid #fed7aa}
+    .small-note{font-size:11px;color:#98a2b3}
+
+    .score-layout{display:grid;grid-template-columns:330px 1fr;gap:22px}
+    .score-box{padding:26px;text-align:center;background:linear-gradient(180deg,#fbfeff,#f3f9fc);border:1px solid #d7eaf3;border-radius:16px}
+    .score-ring{width:176px;height:176px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--brand) calc(var(--score)*1%),#e6edf2 0);position:relative}
+    .score-ring:after{content:"";position:absolute;inset:14px;background:white;border-radius:50%}
+    .score-value{position:relative;z-index:2;display:flex;align-items:baseline;justify-content:center;gap:3px;color:#123a59}
+    .score-value b{font-size:48px;line-height:1}
+    .score-value span{font-size:14px;font-weight:800}
+    .score-label{font-weight:900;color:#344054}
+    .score-disclaimer{font-size:11px;color:#98a2b3;margin-top:8px}
+    .area-scores{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+    .mini-score{background:white;border:1px solid #e4e7ec;border-radius:10px;padding:11px;text-align:left}
+    .mini-top{display:flex;justify-content:space-between;font-size:12px;font-weight:900;margin-bottom:7px}
+    .bar{height:6px;border-radius:999px;background:#edf2f5;overflow:hidden}
+    .bar i{display:block;height:100%;background:var(--brand);border-radius:999px}
+    .insight-box{border:1px solid #e4e7ec;border-radius:16px;padding:22px}
+    .insight-box h3{margin:0 0 5px;color:#173b59;font-size:18px}
+    .insight-box>p{margin:0 0 16px;color:#667085;font-size:12px}
+    .priority-list{display:flex;flex-direction:column;gap:10px}
+    .priority-item{display:grid;grid-template-columns:38px 1fr auto;gap:12px;align-items:start;border:1px solid #f0d5c4;background:#fffaf5;border-radius:12px;padding:13px 14px}
+    .priority-rank{width:30px;height:30px;border-radius:8px;background:#fff1e6;color:#b54708;display:grid;place-items:center;font-weight:900;font-size:12px}
+    .priority-item strong{display:block;font-size:13px;color:#7a2e0e;margin-bottom:3px}
+    .priority-item p{margin:0;font-size:12px;color:#667085}
+    .pdca-chip{border-radius:999px;padding:4px 8px;font-size:10px;font-weight:900;white-space:nowrap}
+    .chip-p{background:#eaf4ff;color:#175cd3}.chip-d{background:#ecfdf3;color:#067647}.chip-c{background:#fff6e8;color:#b54708}.chip-a{background:#f4f3ff;color:#5925dc}
+    .covered{margin-top:18px;border-top:1px solid #eef2f6;padding-top:16px}
+    .covered h4{font-size:13px;margin:0 0 9px;color:#475467}
+    .covered-tags{display:flex;gap:7px;flex-wrap:wrap}
+    .covered-tag{font-size:11px;border:1px solid #d0d5dd;border-radius:999px;padding:5px 8px;color:#667085;background:white}
+
+    .question-intro{background:#eef8fc;border:1px solid #cbe8f3;border-radius:14px;padding:15px 16px;margin-bottom:18px;color:#36556b;font-size:13px}
+    .questions{display:flex;flex-direction:column;gap:14px}
+    .question-card{border:1px solid #dfe5eb;border-radius:14px;padding:18px;background:white}
+    .question-top{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+    .question-card h3{font-size:14px;margin:0;color:#27364a}
+    .why{font-size:11px;color:#667085;background:#f6f8fa;border-radius:8px;padding:8px 10px;margin-bottom:10px}
+    .question-card textarea{width:100%;min-height:88px;border:1px solid #cfd8e3;border-radius:10px;padding:11px 12px;resize:vertical;outline:none}
+    .question-card textarea:focus{border-color:#57b8dd;box-shadow:0 0 0 3px rgba(7,153,210,.09)}
+    .example-answer{font-size:11px;color:#0876a7;margin-top:7px}
+
+    .result-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px;flex-wrap:wrap}
+    .result-toolbar .status{display:flex;align-items:center;gap:8px;font-size:12px;color:#067647;font-weight:800}
+    .dot{width:8px;height:8px;border-radius:50%;background:#12b76a}
+    .paper{width:min(100%,900px);margin:0 auto;background:white;border:1px solid #cfd6dc;box-shadow:0 14px 34px rgba(16,24,40,.12);padding:48px 54px;min-height:1100px}
+    .paper-header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #111;padding-bottom:12px;margin-bottom:24px;gap:20px}
+    .paper-logo img{width:155px;height:50px;object-fit:contain;object-position:left center}
+    .paper-title{text-align:right}
+    .paper-title .label{font-size:11px;color:#667085}
+    .paper-title h2{margin:3px 0 0;font-size:23px;color:#111;letter-spacing:-.03em}
+    .meta-table{width:100%;border-collapse:collapse;margin-bottom:25px;font-size:12px}
+    .meta-table th,.meta-table td{border:1px solid #9aa4ae;padding:8px 10px;text-align:left}
+    .meta-table th{background:#f1f3f5;width:100px;text-align:center}
+    .doc-section{margin-top:25px}
+    .doc-section h3{font-size:17px;margin:0 0 11px;color:#111;display:flex;align-items:center;gap:8px}
+    .pdca-letter{display:inline-grid;place-items:center;width:26px;height:26px;border:1px solid #555;font-size:12px;font-weight:900}
+    .doc-subtitle{font-size:13px;font-weight:900;margin:12px 0 5px;color:#222}
+    .doc-bullets{margin:0;padding:0;list-style:none;font-size:13px;color:#222}
+    .doc-bullets li{position:relative;padding-left:18px;margin:6px 0}
+    .doc-bullets li:before{content:"○";position:absolute;left:0;top:0}
+    .evidence-box{margin-top:26px;border:1px solid #9aa4ae;background:#fafafa;padding:14px;font-size:12px}
+    .evidence-box strong{display:block;margin-bottom:7px}
+    .eval-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+    .eval-tags span{border:1px solid #cfd6dc;background:white;border-radius:999px;padding:4px 8px;font-size:10px;color:#475467}
+    .paper-foot{border-top:1px solid #d0d5dd;margin-top:32px;padding-top:10px;font-size:10px;color:#98a2b3}
+
+    .toast{position:fixed;right:22px;bottom:22px;background:#173b59;color:white;padding:11px 15px;border-radius:10px;font-size:12px;font-weight:800;box-shadow:0 10px 26px rgba(16,24,40,.2);opacity:0;transform:translateY(10px);pointer-events:none;transition:.22s;z-index:100}
+    .toast.show{opacity:1;transform:none}
+    .footer{margin-top:35px;color:#667085;font-size:11px;display:grid;gap:5px;text-align:center}
+    .footer a{color:#0876a7;text-decoration:none;font-weight:800}
+
+    @media(max-width:900px){
+      .hero-grid,.score-layout{grid-template-columns:1fr}
+      .topbar-inner{align-items:flex-start;flex-direction:column;gap:8px}
+      .year-badge{display:none}
+      .product-name{display:none}
+      .stepper{grid-template-columns:1fr 1fr}
+      .paper{padding:34px 24px}
+    }
+    @media(max-width:620px){
+      .shell{padding-left:14px;padding-right:14px}
+      .topbar-inner{padding-left:14px;padding-right:14px}
+      .hero{padding-top:28px}
+      h1{font-size:28px}
+      .hero-main{padding:26px 22px}
+      .form-grid{grid-template-columns:1fr}
+      .card-head,.card-body{padding-left:18px;padding-right:18px}
+      .stepper{grid-template-columns:1fr}
+      .area-scores{grid-template-columns:1fr 1fr}
+      .priority-item{grid-template-columns:34px 1fr}.priority-item .pdca-chip{grid-column:2}
+      .paper-header{flex-direction:column}.paper-title{text-align:left}
+    }
+    @media print{
+      body{background:white}
+      .topbar,.hero,.stepper-wrap,.panel:not(#panel4),#panel4 .card-head,.result-toolbar,.footer{display:none!important}
+      .shell{max-width:none;padding:0;margin:0}
+      #panel4{display:block!important}
+      #panel4 .card{border:0;box-shadow:none}
+      #panel4 .card-body{padding:0}
+      .paper{box-shadow:none;border:0;width:100%;padding:14mm 16mm;min-height:auto}
+      @page{size:A4;margin:0}
+    }
+  </style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <img id="mainLogo" src="https://www.suwonudc.co.kr/cmm/fms/getImage.do?atchFileId=FILE_000000000070034&amp;fileSn=0" alt="수원도시공사 로고" onerror="this.style.display='none';document.getElementById('fallbackBrand').style.display='flex'" />
+      <div class="brand-fallback" id="fallbackBrand"><span class="mark"></span><span>수원도시공사</span></div>
+      <div class="product-name">PDCA 경영평가 Coach</div>
+    </div>
+    <div class="year-badge">2026 지방공기업 경영평가 편람 관점 반영</div>
+  </div>
+</header>
+
+<main class="shell">
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="hero-main">
+        <div class="eyebrow">SUWON URBAN DEVELOPMENT CORPORATION · INTERNAL WRITING ASSISTANT</div>
+        <h1>문서를 올리면, 부족한 근거를 먼저 찾고<br>PDCA형 경영평가 문서로 다시 정리합니다.</h1>
+        <p class="lead">직원이 PDCA 형식을 외우지 않아도 기존 문서의 내용을 분석해 <b>완성도 → 우선 보완사항 → 보완 질문 → 공공기관 보고서형 결과</b> 순서로 안내하는 정적 웹 프로토타입입니다.</p>
+        <div class="hero-tags">
+          <span class="hero-tag">목표·KPI</span><span class="hero-tag">실행체계</span><span class="hero-tag">정량성과</span><span class="hero-tag">지역상생·협력</span><span class="hero-tag">안전책임</span><span class="hero-tag">환류·개선</span>
+        </div>
+      </div>
+      <aside class="handbook-card">
+        <div class="handbook-title"><span class="doc-icon">편</span><span>2026 편람 반영 기준</span></div>
+        <ul>
+          <li><b>경영실적보고서 작성요령</b>을 고려해 계획·실행·성과·환류가 연결되는지 확인</li>
+          <li>2026년 개편 방향의 <b>핵심성과 측정 강화</b> 관점 반영</li>
+          <li><b>지역상생·협력</b> 및 지역 현안 해결 근거 확인</li>
+          <li><b>안전분야 책임</b> 및 위험관리 근거 확인</li>
+          <li>정량성과는 가능하면 목표·전년·개선 전후 등 <b>비교기준</b>과 함께 제시</li>
+        </ul>
+        <a class="source-link" href="https://www.mois.go.kr/frt/bbs/type001/commonSelectBoardArticle.do?bbsId=BBSMSTR_000000000062&amp;nttId=122893" target="_blank" rel="noreferrer">행정안전부 2026 경영평가 편람 보기 →</a>
+      </aside>
+    </div>
+  </section>
+
+  <div class="stepper-wrap" aria-label="작성 단계">
+    <div class="stepper">
+      <div class="step active" data-step="1"><span class="num">1</span><span>문서 입력</span></div>
+      <div class="step" data-step="2"><span class="num">2</span><span>완성도·보완사항</span></div>
+      <div class="step" data-step="3"><span class="num">3</span><span>보완 질문</span></div>
+      <div class="step" data-step="4"><span class="num">4</span><span>PDCA 문서</span></div>
+    </div>
+  </div>
+
+  <section class="panel active" id="panel1">
+    <div class="card">
+      <div class="card-head">
+        <div><h2>1. 기존 문서를 입력해 주세요.</h2><p>보고서·계획서·결과보고 등 기존 자료를 그대로 활용합니다.</p></div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+          <label class="field"><span>사업명 / 과제명</span><input id="projectName" value="공공체육시설 이용환경 개선" placeholder="예: 공공체육시설 이용환경 개선" /></label>
+          <label class="field"><span>작성부서</span><input id="department" value="스포츠시설팀" placeholder="예: 스포츠시설팀" /></label>
+        </div>
+        <div class="upload-zone" id="dropZone">
+          <strong>파일을 끌어놓거나 선택하세요</strong>
+          <p>PDF · DOCX · HWPX · XLSX · TXT · CSV 지원 / 구형 HWP는 정적 웹에서 직접 분석하지 않습니다.</p>
+          <input id="fileInput" type="file" accept=".pdf,.docx,.hwpx,.xlsx,.xls,.txt,.md,.csv,.hwp" hidden />
+          <button class="btn secondary" id="selectFileBtn" type="button">파일 선택</button>
+          <div class="file-name" id="fileName"></div>
+        </div>
+        <div class="privacy-note"><span>🔒</span><span>이 정적 프로토타입은 입력 파일을 외부 서버로 전송하지 않고 브라우저 안에서 텍스트를 추출합니다. 운영형 AI 연동 시에는 별도 보안·개인정보·망분리 기준 검토가 필요합니다.</span></div>
+        <label class="field" style="margin-top:18px"><span>문서 내용 확인 / 직접 붙여넣기</span><textarea id="sourceText" placeholder="파일에서 추출한 내용이 여기에 표시됩니다. 또는 기존 문서를 직접 붙여넣으세요."></textarea></label>
+        <div class="actions">
+          <span class="small-note">예시로 기능을 확인한 뒤 실제 문서를 넣어도 됩니다.</span>
+          <button class="btn ghost" type="button" id="sampleBtn">샘플 불러오기</button>
+          <button class="btn primary" type="button" id="analyzeBtn">PDCA 완성도 분석</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel2">
+    <div class="card">
+      <div class="card-head">
+        <div><h2>2. PDCA 완성도와 우선 보완사항</h2><p>공식 경영평가 점수가 아니라 문서 작성 완성도를 빠르게 진단하는 내부 보조지표입니다.</p></div>
+      </div>
+      <div class="card-body">
+        <div class="score-layout">
+          <div class="score-box">
+            <div class="score-ring" id="scoreRing" style="--score:0"><div class="score-value"><b id="totalScore">0</b><span>/100</span></div></div>
+            <div class="score-label" id="scoreLabel">분석 전</div>
+            <div class="score-disclaimer">※ 편람의 공식 평가점수와 무관한 문서 구조 진단값</div>
+            <div class="area-scores" id="areaScores"></div>
+          </div>
+          <div class="insight-box">
+            <h3>우선 보완해야 할 내용</h3>
+            <p>빠진 항목을 중요도 순으로 제시합니다. 다음 단계에서는 이를 질문으로 바꿔 필요한 사실만 추가로 받습니다.</p>
+            <div class="priority-list" id="priorityList"></div>
+            <div class="covered"><h4>현재 문서에서 확인된 강점</h4><div class="covered-tags" id="coveredTags"></div></div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn ghost" type="button" data-go="1">문서 수정</button>
+          <button class="btn primary" type="button" id="toQuestionsBtn">보완 질문에 답하기</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel3">
+    <div class="card">
+      <div class="card-head">
+        <div><h2>3. 부족한 내용만 질문드립니다.</h2><p>문서에 없는 사실을 임의로 만들지 않고 담당자가 확인한 내용만 최종 문서에 반영합니다.</p></div>
+      </div>
+      <div class="card-body">
+        <div class="question-intro">질문은 앞 단계에서 점수가 낮았던 항목을 중심으로 자동 구성됩니다. 정확히 모르는 내용은 비워두어도 되며, 빈 항목은 최종 문서에서 <b>“확인 필요”</b>로 표시합니다.</div>
+        <div class="questions" id="questions"></div>
+        <div class="actions">
+          <button class="btn ghost" type="button" data-go="2">진단 결과 보기</button>
+          <button class="btn primary" type="button" id="generateBtn">공공기관 형식으로 PDCA 다시 만들기</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel4">
+    <div class="card">
+      <div class="card-head">
+        <div><h2>4. 공공기관 문서형식 PDCA 결과</h2><p>□·○ 문장 구조와 Plan → Do → Check → Act 연결이 보이도록 정리합니다.</p></div>
+      </div>
+      <div class="card-body">
+        <div class="result-toolbar">
+          <div class="status"><span class="dot"></span><span>담당자 답변을 반영한 문서 초안</span></div>
+          <div><button class="btn ghost" type="button" id="copyBtn">텍스트 복사</button> <button class="btn secondary" type="button" onclick="window.print()">인쇄 / PDF 저장</button></div>
+        </div>
+        <article class="paper" id="paper">
+          <div class="paper-header">
+            <div class="paper-logo">
+              <img src="https://www.suwonudc.co.kr/cmm/fms/getImage.do?atchFileId=FILE_000000000070034&amp;fileSn=0" alt="수원도시공사 로고" onerror="this.outerHTML='<strong style=&quot;color:#138ec4;font-size:18px&quot;>수원도시공사</strong>'" />
+            </div>
+            <div class="paper-title"><div class="label">경영평가 성과보고서 작성 보조안</div><h2 id="paperProject">사업 추진성과</h2></div>
+          </div>
+          <table class="meta-table"><tbody><tr><th>작성부서</th><td id="paperDept"></td><th>작성기준</th><td>2026 지방공기업 경영평가 편람 관점</td></tr><tr><th>문서상태</th><td>PDCA 보완 초안</td><th>완성도</th><td id="paperScore"></td></tr></tbody></table>
+          <div id="documentSections"></div>
+          <div class="evidence-box"><strong>평가근거·증빙자료 확인란</strong><div id="evidenceText">○ 최종 제출 전 각 정량실적·회의·공문·조사결과 등에 대한 증빙자료명을 연결해 주세요.</div><div class="eval-tags" id="evalTags"></div></div>
+          <div class="paper-foot">※ 본 초안은 직원의 PDCA형 성과기술을 지원하기 위한 내부 작성 보조자료입니다. 실제 경영실적보고서 제출 시 해당 연도 편람의 지표별 평가내용·착안사항·제출기준 및 기관 내부 검토를 우선 적용해야 합니다.</div>
+        </article>
+        <div class="actions"><button class="btn ghost" type="button" data-go="3">보완 답변 수정</button><button class="btn primary" type="button" data-go="1">새 문서 분석</button></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    <div>기준 참고: <a href="https://www.mois.go.kr/frt/bbs/type001/commonSelectBoardArticle.do?bbsId=BBSMSTR_000000000062&amp;nttId=122893" target="_blank" rel="noreferrer">2026년 지방공기업 경영평가 편람</a> · <a href="https://www.mois.go.kr/frt/bbs/type010/commonSelectBoardArticle.do?bbsId=BBSMSTR_000000000008&amp;nttId=122565" target="_blank" rel="noreferrer">2026 경영평가 개편 보도자료</a></div>
+    <div>로고 출처: <a href="https://www.suwonudc.co.kr/PageLink.do?link=forward%3A%2FPageContent.do&amp;menuNo=050103" target="_blank" rel="noreferrer">수원도시공사 기관상징</a> · 내부 비영리 프로토타입</div>
+  </div>
+</main>
+
+<div class="toast" id="toast">완료</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script>
+(function(){
+  const $ = (s, root=document) => root.querySelector(s);
+  const $$ = (s, root=document) => Array.from(root.querySelectorAll(s));
+  const state = { text:'', scores:{}, missing:[], covered:[], questions:[], answers:{} };
+  if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+  const criteria = {
+    P:[
+      {id:'p_background',label:'추진배경·문제 정의',weight:5,keywords:['현황','문제','민원','필요','요구','배경','환경','이슈','불편'],rec:'사업을 시작하게 된 현황과 문제를 근거 중심으로 제시해 주세요.',q:'이 사업을 추진하게 된 가장 중요한 문제·현황은 무엇이며, 이를 보여주는 민원·통계·조사 결과가 있습니까?',ex:'예: 2025년 시설 이용 민원 83건 중 안내체계 관련 민원 31건(37.3%)으로 확인됨.'},
+      {id:'p_basis',label:'추진근거·분석 근거',weight:5,keywords:['근거','조례','법률','지침','계획','분석','조사','통계','데이터','결과'],rec:'법령·계획·조사·통계 등 추진 필요성을 뒷받침할 근거가 필요합니다.',q:'추진 필요성을 뒷받침하는 법령·지침·조사·민원분석·내부계획 등 객관적인 근거는 무엇입니까?',ex:'예: 고객만족도 조사 결과, 민원분석 보고, 중장기경영계획, 관련 조례 등.'},
+      {id:'p_target',label:'목표·KPI 설정',weight:6,keywords:['목표','kpi','성과지표','달성','감소 목표','증가 목표','개선 목표'],numeric:true,rec:'측정 가능한 목표와 KPI를 명확히 제시해 주세요.',q:'사업 시작 시 설정한 정량·정성 목표는 무엇입니까? 가능하면 기준값과 목표값을 함께 적어 주세요.',ex:'예: 안내 관련 민원 20% 감소, 이용자 만족도 85점 이상.'},
+      {id:'p_stakeholder',label:'이해관계자·시민 의견',weight:4,keywords:['시민','고객','이용자','주민','이해관계자','의견','협의','간담회','설문'],rec:'시민·고객·유관기관 의견이 계획에 어떻게 반영됐는지 보완하면 좋습니다.',q:'계획 수립 전 시민·이용자·현장직원·유관기관의 의견을 어떤 방식으로 수렴했고 무엇을 반영했습니까?',ex:'예: 이용자 150명 설문, 현장근무자 간담회 2회 결과를 개선안에 반영.'},
+      {id:'p_feedback',label:'전년도·기존과제 연계',weight:5,keywords:['전년도','전년','지적사항','개선과제','경영평가','지난해','기존 문제','환류'],rec:'전년도 실적·지적사항·기존 문제와 이번 계획의 연결성을 제시해 주세요.',q:'전년도 실적, 경영평가 지적사항 또는 기존 사업의 미흡사항 중 이번 계획에 반영한 내용이 있습니까?',ex:'예: 전년도 자체평가에서 안내체계 표준화 미흡이 개선과제로 도출됨.'}
+    ],
+    D:[
+      {id:'d_action',label:'구체적 실행내용',weight:6,keywords:['추진','시행','운영','설치','교체','교육','개선','실시','구축','개편','정비'],rec:'실제로 무엇을 어떻게 했는지 실행내용을 구체화해 주세요.',q:'목표 달성을 위해 실제로 수행한 핵심 활동을 시기·대상·횟수·규모와 함께 적어 주세요.',ex:'예: 4~6월 안내판 12개소 교체, 현장직원 38명 대상 교육 2회.'},
+      {id:'d_role',label:'추진체계·담당·일정',weight:4,keywords:['담당','부서','일정','기간','tf','추진체계','협업체계','역할','월','분기'],rec:'담당부서·일정·역할 등 실행체계를 제시하면 계획 대비 이행이 명확해집니다.',q:'추진기간, 담당부서, 협업부서 또는 TF 등 실행체계는 어떻게 구성했습니까?',ex:'예: 주관 스포츠시설팀, 협조 정보화팀·안전팀, 2025.4.~9.'},
+      {id:'d_resource',label:'예산·인력·협업자원',weight:4,keywords:['예산','사업비','인력','명','계약','용역','협약','협업','자원'],rec:'투입 예산·인력·협업자원을 명확히 하면 실행의 실체가 강화됩니다.',q:'투입한 예산·인력·외부기관 협업 등 주요 자원은 무엇입니까?',ex:'예: 사업비 18백만원, 담당 3명, 시설관리 용역사와 합동 추진.'},
+      {id:'d_safety',label:'안전·위험관리',weight:6,keywords:['안전','위험','점검','재난','산재','위험성평가','사고','예방','비상','보호구'],rec:'2026년 평가에서 강화된 안전책임 관점에서 사업 관련 위험관리 근거를 확인해 주세요.',q:'이 사업과 관련된 안전위험을 사전에 어떻게 확인·예방·점검했습니까? 해당사항이 없다면 그 이유를 적어 주세요.',ex:'예: 작업 전 위험성평가 실시, 이용객 동선 분리, 합동 안전점검 3회.'},
+      {id:'d_local',label:'지역상생·협력',weight:5,keywords:['지역','상생','협력','소상공','지역업체','지역사회','수원시','유관기관','협의체','사회적기업'],rec:'2026년 평가에서 강조된 지역상생·협력 요소가 사업에 해당하는지 확인해 주세요.',q:'지역업체·지역사회·수원시·유관기관과 협력하거나 지역 현안 해결에 기여한 내용이 있습니까? 해당하지 않는 사업이면 해당없음 사유를 적어 주세요.',ex:'예: 관내 업체 참여, 지역단체 의견반영, 유관기관 공동캠페인 추진.'}
+    ],
+    C:[
+      {id:'c_quant',label:'정량 실적·핵심성과',weight:7,keywords:['실적','성과','감소','증가','향상','절감','이용객','만족도','달성'],numeric:true,rec:'핵심성과를 숫자로 보여주는 실적이 필요합니다.',q:'사업 시행 후 달라진 핵심 실적을 숫자로 제시할 수 있습니까? (건수·비율·점수·비용·시간 등)',ex:'예: 민원 31건→19건(38.7% 감소), 만족도 82.1점→88.7점.'},
+      {id:'c_compare',label:'목표·전년·개선 전후 비교',weight:5,keywords:['목표 대비','달성률','전년 대비','전년대비','전년도 대비','개선 전','개선 후','비교','초과 달성'],rec:'성과값만 제시하기보다 목표 또는 전년·개선 전후와 비교해 주세요.',q:'현재 실적을 어떤 기준과 비교할 수 있습니까? 목표 대비, 전년 대비, 개선 전후 중 가능한 비교값을 적어 주세요.',ex:'예: 목표 20% 감소 대비 실제 38.7% 감소로 목표를 18.7%p 초과.'},
+      {id:'c_quality',label:'고객·서비스 체감성과',weight:4,keywords:['만족도','고객','시민','이용자','민원','서비스','체감','설문','평가'],rec:'공공서비스 개선 효과를 시민·고객 관점에서 확인할 수 있는 근거가 필요합니다.',q:'시민·이용자 만족도, 민원, 서비스 시간, 이용편의 등 체감성과는 어떻게 변화했습니까?',ex:'예: 현장 설문 만족 91.4%, 관련 민원 12건 감소.'},
+      {id:'c_analysis',label:'성과 원인·효과 분석',weight:5,keywords:['원인','분석','효과','기여','영향','요인','검토 결과','분석 결과'],rec:'성과가 왜 발생했는지 원인·기여요인을 분석하면 평가 설득력이 높아집니다.',q:'성과가 나타난 이유는 무엇이며, 여러 활동 중 어떤 조치가 가장 효과적이었다고 판단합니까?',ex:'예: 안내판 재배치와 직원 표준안내 교육을 병행한 것이 민원 감소에 가장 크게 기여.'},
+      {id:'c_evidence',label:'증빙자료 연결',weight:4,keywords:['증빙','공문','결과보고','회의록','사진','대장','보고서','조사결과','시스템'],rec:'정량실적과 추진내용별 증빙자료를 연결해 주세요.',q:'최종 문서에 연결할 수 있는 증빙자료명(공문·결과보고·사진대장·조사결과·시스템 통계 등)은 무엇입니까?',ex:'예: 2025 고객만족도 조사결과.pdf, 안내판 개선 결과보고(스포츠-1234), 민원통계.'}
+    ],
+    A:[
+      {id:'a_improve',label:'미흡사항·개선조치',weight:6,keywords:['개선','보완','조치','시정','미흡','문제점','추가 조치','재발방지'],rec:'성과 확인 후 도출한 미흡사항과 개선조치를 명확히 제시해 주세요.',q:'성과 점검 과정에서 발견한 미흡사항은 무엇이며, 그에 따라 실제로 추가 개선한 내용이 있습니까?',ex:'예: 야간 시인성이 낮은 3개 지점에 조명형 안내표지를 추가 설치.'},
+      {id:'a_system',label:'제도화·표준화',weight:5,keywords:['매뉴얼','표준','규정','지침','정례','제도','체계화','점검항목','업무절차'],rec:'일회성 개선이 아니라 규정·매뉴얼·점검체계 등에 반영한 근거가 필요합니다.',q:'이번 성과를 지속하기 위해 매뉴얼·점검표·업무절차·내부규정 등에 반영한 내용이 있습니까?',ex:'예: 분기별 시설안내 점검항목을 정기점검표에 신설.'},
+      {id:'a_spread',label:'확산·공유',weight:4,keywords:['확대','전파','공유','타시설','전사','벤치마킹','확산','적용'],rec:'우수성과를 다른 시설·부서로 확산한 내용이 있다면 제시해 주세요.',q:'검증된 개선방식을 다른 시설·부서에 공유하거나 확대 적용한 실적이 있습니까?',ex:'예: 3개 체육시설에 표준안내 디자인을 확대 적용.'},
+      {id:'a_next',label:'차년도·향후계획',weight:5,keywords:['향후','차년도','내년','추후','지속','계획','예정','후속'],rec:'성과를 다음 연도 계획과 연결해 지속성을 보여주세요.',q:'다음 연도에 유지·확대·보완할 구체적인 후속계획은 무엇입니까?',ex:'예: 2026년 전 체육시설 안내체계 표준화 및 분기별 이용자 만족도 모니터링.'},
+      {id:'a_feedback',label:'성과 환류',weight:5,keywords:['환류','반영','재설계','추가개선','정책 반영','계획 반영','예산 반영'],rec:'점검 결과가 다음 계획·예산·제도에 실제 반영되었다는 환류 근거를 제시해 주세요.',q:'점검·평가 결과를 다음 계획, 예산, 업무절차 또는 성과지표에 어떻게 반영했습니까?',ex:'예: 민원분석 결과를 차년도 시설개선 예산 편성 및 KPI에 반영.'}
+    ]
+  };
+
+  const sample = `공공체육시설 이용환경 개선 결과보고\n\n최근 시설 안내 관련 민원이 지속적으로 증가하여 이용자 불편 해소가 필요하였다. 2025년 민원 분석 결과 안내체계 관련 민원이 주요 원인으로 확인되었다. 이에 이용자 안내환경 개선을 추진하였다.\n\n2025년 4월부터 8월까지 안내판 12개소를 교체하고 현장 직원 38명을 대상으로 이용안내 교육을 2회 실시하였다. 시설관리 용역업체와 함께 현장 동선을 점검하였다. 사업비는 18백만원을 집행하였다.\n\n사업 추진 후 안내 관련 민원은 31건에서 19건으로 감소하였고 이용자 만족도는 82.1점에서 88.7점으로 상승하였다. 개선 효과가 확인되었다.\n\n향후 안내체계를 지속적으로 점검할 계획이다.`;
+
+  function toast(msg){ const el=$('#toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),1800); }
+  function go(step){
+    $$('.panel').forEach((p,i)=>p.classList.toggle('active',i===step-1));
+    $$('.step').forEach((s,i)=>{s.classList.toggle('active',i===step-1);s.classList.toggle('done',i<step-1)});
+    window.scrollTo({top:document.querySelector('.stepper-wrap').offsetTop-84,behavior:'smooth'});
+  }
+  $$('[data-go]').forEach(b=>b.addEventListener('click',()=>go(Number(b.dataset.go))));
+
+  const dz=$('#dropZone'), fi=$('#fileInput');
+  $('#selectFileBtn').addEventListener('click',()=>fi.click());
+  ['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('drag')}));
+  ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('drag')}));
+  dz.addEventListener('drop',e=>{ const f=e.dataTransfer.files[0]; if(f) handleFile(f); });
+  fi.addEventListener('change',()=>{ if(fi.files[0]) handleFile(fi.files[0]); });
+  $('#sampleBtn').addEventListener('click',()=>{$('#sourceText').value=sample;$('#projectName').value='공공체육시설 이용환경 개선';$('#department').value='스포츠시설팀';toast('샘플 문서를 불러왔습니다.');});
+
+  async function handleFile(file){
+    $('#fileName').textContent='불러오는 중 · '+file.name;
+    const ext=(file.name.split('.').pop()||'').toLowerCase();
+    try{
+      let text='';
+      if(['txt','md','csv'].includes(ext)) text=await file.text();
+      else if(ext==='docx'){
+        if(!window.mammoth) throw new Error('DOCX 라이브러리를 불러오지 못했습니다.');
+        const r=await mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()}); text=r.value;
+      }
+      else if(ext==='pdf'){
+        if(!window.pdfjsLib) throw new Error('PDF 라이브러리를 불러오지 못했습니다.');
+        const pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;
+        const out=[]; for(let i=1;i<=pdf.numPages;i++){ const p=await pdf.getPage(i); const c=await p.getTextContent(); out.push(c.items.map(x=>x.str).join(' ')); }
+        text=out.join('\n');
+      }
+      else if(['xlsx','xls'].includes(ext)){
+        if(!window.XLSX) throw new Error('XLSX 라이브러리를 불러오지 못했습니다.');
+        const wb=XLSX.read(await file.arrayBuffer(),{type:'array'}); const out=[]; wb.SheetNames.forEach(n=>{out.push('['+n+']\n'+XLSX.utils.sheet_to_csv(wb.Sheets[n]));}); text=out.join('\n\n');
+      }
+      else if(ext==='hwpx'){
+        if(!window.JSZip) throw new Error('HWPX 라이브러리를 불러오지 못했습니다.');
+        const zip=await JSZip.loadAsync(await file.arrayBuffer());
+        const names=Object.keys(zip.files).filter(n=>/Contents\/section\d+\.xml$/i.test(n)).sort();
+        const parts=[];
+        for(const name of names){ const xml=await zip.file(name).async('text'); const doc=new DOMParser().parseFromString(xml,'application/xml'); const ts=Array.from(doc.getElementsByTagNameNS('*','t')); parts.push(ts.map(n=>n.textContent).join(' ')); }
+        text=parts.join('\n');
+      }
+      else if(ext==='hwp') throw new Error('구형 HWP는 정적 브라우저만으로 안정적으로 분석하기 어렵습니다. HWPX 또는 PDF로 저장 후 다시 선택해 주세요.');
+      else throw new Error('지원하지 않는 파일 형식입니다.');
+      $('#sourceText').value=text.trim(); $('#fileName').textContent='✓ '+file.name+' · 브라우저 내 텍스트 추출 완료'; toast('파일을 불러왔습니다.');
+    }catch(err){ $('#fileName').textContent='⚠ '+file.name+' · '+err.message; toast('파일 변환을 확인해 주세요.'); }
+  }
+
+  function norm(t){return (t||'').toLowerCase().replace(/\s+/g,' ')}
+  function hasNumeric(t){return /\d+(?:\.\d+)?\s*(?:%|%p|건|명|점|원|만원|백만원|억|회|개|개소|시간|분|일|개월|년)/i.test(t)}
+  function criterionScore(c,t){
+    const hits=c.keywords.filter(k=>t.includes(k.toLowerCase())).length;
+    const numeric=hasNumeric(t);
+    let ratio = hits>=2?1:hits===1?.72:0;
+    // 목표는 단순히 숫자가 있다는 이유만으로 점수를 주지 않는다. '목표/KPI' 표현과 측정값이 함께 있어야 충실한 것으로 본다.
+    if(c.id==='p_target') ratio = hits ? (numeric ? 1 : .6) : 0;
+    // 핵심성과는 성과 표현과 수치가 함께 있을 때 가장 높게 본다.
+    else if(c.id==='c_quant') ratio = hits ? (numeric ? 1 : .55) : 0;
+    // 안전은 일반적인 '점검'만으로 충족 처리하지 않고 안전·위험 관련 명시적 표현이 있어야 한다.
+    else if(c.id==='d_safety') {
+      const explicit=/안전|위험|재난|산재|위험성평가|사고|예방|비상|보호구/.test(t);
+      ratio = explicit ? (hits>=2?1:.72) : 0;
+    }
+    else if(c.numeric){ if(numeric && hits) ratio=1; }
+    return Math.round(c.weight*ratio*10)/10;
+  }
+  function analyze(){
+    const raw=$('#sourceText').value.trim(); if(!raw){toast('분석할 문서 내용을 넣어 주세요.');return;}
+    state.text=raw; const t=norm(raw); state.scores={}; state.missing=[]; state.covered=[];
+    Object.entries(criteria).forEach(([phase,items])=>{
+      let sum=0,total=0;
+      items.forEach(c=>{const s=criterionScore(c,t);sum+=s;total+=c.weight;const ratio=s/c.weight;if(ratio<.65)state.missing.push({...c,phase,ratio});else state.covered.push({...c,phase,ratio});});
+      state.scores[phase]=Math.round(sum/total*100);
+    });
+    state.total=Math.round((state.scores.P+state.scores.D+state.scores.C+state.scores.A)/4);
+    state.missing.sort((a,b)=>(b.weight*(1-b.ratio))-(a.weight*(1-a.ratio)));
+    renderAnalysis(); go(2);
+  }
+  $('#analyzeBtn').addEventListener('click',analyze);
+
+  function renderAnalysis(){
+    $('#totalScore').textContent=state.total; $('#scoreRing').style.setProperty('--score',state.total);
+    $('#scoreLabel').textContent=state.total>=85?'매우 충실':state.total>=70?'대체로 충실':state.total>=55?'보완 권장':'보완 필요';
+    const names={P:'P 계획',D:'D 실행',C:'C 점검',A:'A 환류'};
+    $('#areaScores').innerHTML=Object.keys(names).map(k=>`<div class="mini-score"><div class="mini-top"><span>${names[k]}</span><b>${state.scores[k]}</b></div><div class="bar"><i style="width:${state.scores[k]}%"></i></div></div>`).join('');
+    const pri=state.missing.slice(0,6);
+    $('#priorityList').innerHTML=pri.length?pri.map((c,i)=>`<div class="priority-item"><div class="priority-rank">${i+1}</div><div><strong>${escapeHtml(c.label)}</strong><p>${escapeHtml(c.rec)}</p></div><span class="pdca-chip chip-${c.phase.toLowerCase()}">${c.phase}</span></div>`).join(''):`<div class="priority-item"><div class="priority-rank">✓</div><div><strong>핵심 PDCA 요소가 비교적 충실합니다.</strong><p>최종 제출 전 지표별 평가내용과 증빙자료 연결 여부를 다시 확인해 주세요.</p></div><span class="pdca-chip chip-c">OK</span></div>`;
+    $('#coveredTags').innerHTML=state.covered.slice(0,10).map(c=>`<span class="covered-tag">${c.phase} · ${escapeHtml(c.label)}</span>`).join('')||'<span class="covered-tag">아직 확인된 강점이 적습니다.</span>';
+  }
+
+  $('#toQuestionsBtn').addEventListener('click',()=>{buildQuestions();go(3)});
+  function buildQuestions(){
+    let qs=state.missing.slice(0,7);
+    // Always ask evidence or feedback if weak because these are high-value for evaluation writing.
+    const extra=['c_evidence','a_feedback'];
+    extra.forEach(id=>{const found=Object.values(criteria).flat().find(c=>c.id===id); if(found&&!qs.some(q=>q.id===id)){const phase=Object.entries(criteria).find(([_,arr])=>arr.some(x=>x.id===id))[0];qs.push({...found,phase});}});
+    state.questions=qs.slice(0,8);
+    $('#questions').innerHTML=state.questions.map((c,i)=>`<div class="question-card"><div class="question-top"><span class="pdca-chip chip-${c.phase.toLowerCase()}">${c.phase}</span><h3>${i+1}. ${escapeHtml(c.q)}</h3></div><div class="why">왜 필요한가요? ${escapeHtml(c.rec)}</div><textarea data-qid="${c.id}" placeholder="확인된 사실만 입력해 주세요. 모르면 비워두어도 됩니다.">${escapeHtml(state.answers[c.id]||'')}</textarea><div class="example-answer">답변 예시 · ${escapeHtml(c.ex)}</div></div>`).join('');
+  }
+
+  $('#generateBtn').addEventListener('click',()=>{
+    state.answers={}; $$('[data-qid]').forEach(t=>state.answers[t.dataset.qid]=t.value.trim());
+    renderDocument();go(4);
+  });
+
+  function splitSentences(text){
+    return text.replace(/\r/g,'\n').split(/(?:\n+|(?<=[.!?다])\s+)/).map(x=>x.trim()).filter(x=>x.length>8).slice(0,80);
+  }
+  const phaseKeys={
+    P:['현황','문제','민원','필요','배경','근거','조사','분석','목표','계획','시민','이용자','전년도'],
+    D:['추진','시행','실시','운영','설치','교체','교육','구축','정비','예산','담당','기간','협업','점검'],
+    C:['성과','실적','감소','증가','향상','만족도','달성','효과','결과','개선 후','전년 대비'],
+    A:['향후','환류','개선','보완','제도','매뉴얼','확대','반영','지속','차년도','계획']
+  };
+  function phaseSentences(phase){
+    const s=splitSentences(state.text); const keys=phaseKeys[phase];
+    let arr=s.filter(x=>keys.some(k=>x.toLowerCase().includes(k.toLowerCase())));
+    if(phase==='P') arr=arr.slice(0,5); else arr=arr.slice(0,6);
+    return arr;
+  }
+  function answerList(phase){
+    return state.questions.filter(q=>q.phase===phase).map(q=>state.answers[q.id]).filter(Boolean);
+  }
+  function unique(arr){const seen=new Set();return arr.filter(x=>{const k=x.replace(/\s+/g,' ').slice(0,80);if(seen.has(k))return false;seen.add(k);return true})}
+  function cleanBullet(x){return x.replace(/^[•○□\-\s]+/,'').replace(/\s+/g,' ').trim()}
+  function fallback(phase){
+    const msg={P:'추진배경·목표의 객관적 근거 확인 필요',D:'구체적인 실행내용·추진체계 확인 필요',C:'목표 대비 정량성과 및 효과분석 확인 필요',A:'점검결과에 따른 개선·제도화·차년도 환류 내용 확인 필요'};return msg[phase];
+  }
+  function renderDocument(){
+    const project=$('#projectName').value.trim()||'사업 추진성과'; const dept=$('#department').value.trim()||'작성부서';
+    $('#paperProject').textContent=project; $('#paperDept').textContent=dept; $('#paperScore').textContent=(state.total||0)+'점 (내부 작성지표)';
+    const titles={P:'추진배경 및 목표',D:'주요 추진내용',C:'추진성과 및 효과분석',A:'환류·개선 및 향후계획'};
+    const subtitles={P:'□ 계획의 적정성 및 추진근거',D:'□ 계획에 따른 실행 및 협업',C:'□ 목표 대비 성과 확인 및 원인분석',A:'□ 점검결과의 개선·제도화·차년도 반영'};
+    let html='';
+    ['P','D','C','A'].forEach(ph=>{
+      const existing=phaseSentences(ph).map(cleanBullet); const ans=answerList(ph).map(cleanBullet); let bullets=unique([...existing,...ans]).slice(0,8); if(!bullets.length)bullets=[fallback(ph)];
+      html+=`<section class="doc-section"><h3><span class="pdca-letter">${ph}</span>${titles[ph]}</h3><div class="doc-subtitle">${subtitles[ph]}</div><ul class="doc-bullets">${bullets.map(b=>`<li>${escapeHtml(b)}</li>`).join('')}</ul></section>`;
+    });
+    $('#documentSections').innerHTML=html;
+    const evid=state.answers.c_evidence; $('#evidenceText').innerHTML=evid?`○ ${escapeHtml(evid)}<br>○ 정량성과별 원자료·결재문서·통계 산출기준을 최종 확인`:'○ 증빙자료명이 입력되지 않았습니다. 정량실적·회의·공문·조사결과 등 근거자료를 최종 제출 전에 연결해 주세요.';
+    const tags=[]; if(state.scores.C>=60)tags.push('핵심성과'); if(/지역|상생|협력/.test(state.text+' '+Object.values(state.answers).join(' ')))tags.push('지역상생·협력'); if(/안전|위험|점검|재난/.test(state.text+' '+Object.values(state.answers).join(' ')))tags.push('안전책임'); if(state.scores.A>=60||Object.keys(state.answers).some(k=>k.startsWith('a_')&&state.answers[k]))tags.push('환류·개선'); if(hasNumeric(state.text+' '+Object.values(state.answers).join(' ')))tags.push('정량근거');
+    $('#evalTags').innerHTML=(tags.length?tags:['증빙확인 필요']).map(t=>`<span>${t}</span>`).join('');
+  }
+
+  $('#copyBtn').addEventListener('click',async()=>{
+    const txt=paperToText(); try{await navigator.clipboard.writeText(txt);toast('문서 텍스트를 복사했습니다.');}catch(e){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('문서 텍스트를 복사했습니다.');}
+  });
+  function paperToText(){
+    const project=$('#paperProject').textContent,dept=$('#paperDept').textContent; let out=`[경영평가 성과보고서 작성 보조안]\n${project}\n작성부서: ${dept}\nPDCA 완성도: ${state.total||0}/100 (내부 작성지표)\n\n`;
+    ['P','D','C','A'].forEach(ph=>{const titles={P:'추진배경 및 목표',D:'주요 추진내용',C:'추진성과 및 효과분석',A:'환류·개선 및 향후계획'};out+=`□ ${ph} ${titles[ph]}\n`;const sec=$$('.doc-section').find(s=>s.querySelector('.pdca-letter')?.textContent===ph);if(sec)$$('li',sec).forEach(li=>out+=`○ ${li.textContent}\n`);out+='\n';}); out+='※ 최종 제출 전 지표별 평가내용 및 증빙자료 확인 필요';return out;
+  }
+  function escapeHtml(str){return String(str??'').replace(/[&<>'"]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[s]))}
+})();
+</script>
+</body>
+</html>
